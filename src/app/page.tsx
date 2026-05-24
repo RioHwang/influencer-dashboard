@@ -1,5 +1,5 @@
-import BrandAnalysisHome from "@/components/home/BrandAnalysisHome";
+import BetaOnboardingFlow from "@/components/beta/BetaOnboardingFlow";
 
 export default function HomePage() {
-  return <BrandAnalysisHome />;
+  return <BetaOnboardingFlow />;
 }

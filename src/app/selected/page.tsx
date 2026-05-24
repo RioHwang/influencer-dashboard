@@ -3,29 +3,32 @@
 import Link from "next/link";
 import {
   formatFollowers,
-  getRecommendedInfluencers,
   getMatchScoreColor,
+  PLATFORM_LABELS,
 } from "@/lib/mock-data";
 import { useBrandAnalysis } from "@/lib/brand-context";
 
 export default function SelectedInfluencersPage() {
-  const { selectedIds, toggleSelect, clearSelection, analysis } =
+  const { selectedIds, toggleSelect, clearSelection, analysis, getSelectedInfluencers } =
     useBrandAnalysis();
-  const pool = getRecommendedInfluencers(analysis?.persona ?? null);
-  const selected = pool.filter((i) => selectedIds.has(i.id));
+  const selected = getSelectedInfluencers();
 
   return (
     <div className="p-8">
-      <header className="mb-8 flex items-start justify-between">
+      <header className="mb-8 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-50">
-            선택한 인플루언서 관리
+          <p className="text-xs font-semibold text-neon-green">캠페인 제안 관리</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-zinc-50">
+            선택한 인플루언서
           </h1>
           <p className="mt-1 text-sm text-zinc-500">
-            브랜디드 콘텐츠 계약 제안 대기 · 협업 상태를 관리합니다
+            {analysis?.input.brandName
+              ? `${analysis.input.brandName} · `
+              : ""}
+            브랜디드 콘텐츠 제안 대기 목록
           </p>
         </div>
-        {selected.length > 0 && (
+        {selected.length > 0 ? (
           <button
             type="button"
             onClick={clearSelection}
@@ -33,17 +36,17 @@ export default function SelectedInfluencersPage() {
           >
             전체 해제
           </button>
-        )}
+        ) : null}
       </header>
 
       {selected.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-zinc-700 bg-surface px-8 py-16 text-center">
-          <p className="text-zinc-400">아직 선택된 인플루언서가 없습니다.</p>
+          <p className="text-zinc-400">아직 [제안하기]로 선택한 인플루언서가 없습니다.</p>
           <Link
-            href="/influencers"
+            href="/#recommendations"
             className="mt-4 inline-block text-sm font-semibold text-electric-blue hover:underline"
           >
-            AI 추천 리스트에서 캠페인 제안하기 →
+            추천 리스트로 돌아가기 →
           </Link>
         </div>
       ) : (
@@ -51,7 +54,7 @@ export default function SelectedInfluencersPage() {
           {selected.map((inf) => (
             <article
               key={inf.id}
-              className="flex items-center justify-between rounded-2xl border border-surface-border bg-surface px-5 py-4 ring-1 ring-neon-green/10"
+              className="flex flex-col justify-between gap-4 rounded-2xl border border-surface-border bg-surface px-5 py-4 ring-1 ring-neon-green/10 sm:flex-row sm:items-center"
             >
               <div className="flex items-center gap-4">
                 <div
@@ -65,8 +68,8 @@ export default function SelectedInfluencersPage() {
                     <span className="text-zinc-500">{inf.handle}</span>
                   </p>
                   <p className="mt-0.5 text-xs text-zinc-500">
-                    {inf.category} · {formatFollowers(inf.followers)} · ER{" "}
-                    {inf.engagementRate}%
+                    {PLATFORM_LABELS[inf.platform]} · {inf.category} ·{" "}
+                    {formatFollowers(inf.followers)} · ER {inf.engagementRate}%
                   </p>
                 </div>
               </div>
